@@ -141,6 +141,12 @@ aws iam attach-role-policy --role-name $VELERO_ROLE --policy-arn $POLICY_ARN
 
 ### Installing Velero server in EKS Cluster
 
+Velero supports backing up and restoring Kubernetes volumes attached to pods from the file system of the volumes, called File System Backup (FSB shortly) or Pod Volume Backup. The data movement is fulfilled by using modules from free open-source backup tools [restic](https://github.com/restic/restic) and [kopia](https://github.com/kopia/kopia). Velero allows you to take snapshots of persistent volumes as part of your backups.
+
+Velero `Node Agent` is a Kubernetes daemonset that hosts FSB modules, i.e., restic, kopia uploader & repository. Velero allows us to take snapshots of persistent volumes as part of our backups using one of the supported cloud providers’ block storage offerings. In our case it is Amazon EBS Volumes. 
+
+As in our case we need to backup persitent data attached to EBS volume we will set the `--deployNodeAgent=true` , `--snapshotsEnabled=true` and `--uploaderType="restic"` flags with our velero server installation.
+
 Run the following command to install Velero in our EKS cluster:
 
 ```bash
@@ -176,18 +182,28 @@ EOF
 ```bash
 helm install velero vmware-tanzu/velero -f values.yaml --namespace velero --set snapshotsEnabled=true --set deployNodeAgent=true --set uploaderType="restic"
 ```
+With this command velero gets the parameters from the BackupStorageLocation config to compose the URL to the backup storage.
+
 We can check that the Velero server was successfully installed by running this command:
 
 ```bash
 kubectl get pods –n velero
+
+#Output:
+NAME                      READY   STATUS    RESTARTS   AGE
+node-agent-28lx7          1/1     Running   0          3d18h
+node-agent-d78wq          1/1     Running   0          3d18h
+node-agent-htrrw          1/1     Running   0          3d18h
+velero-6686c4848f-nr487   1/1     Running   0          3d18h
 ```
 Check if the Backup Storage Location is in “Available” state: 
 
 ```bash
 velero backup-location get
 
+#Output:
 NAME      PROVIDER   BUCKET/PREFIX       PHASE       LAST VALIDATED                  ACCESS MODE   DEFAULT
-default   aws        aws-velero-bucket   Available   2024-01-31 12:57:34 +0530 IST   ReadWrite     true
+default   aws        aws-velero-bucket   Available   2024-02-02 11:52:54 +0530 IST   ReadWrite     true
 ```
 
 ### Installing the Velero CLI
@@ -212,34 +228,161 @@ choco install velero
 ```
 Installation instructions vary depending on your operating system. Follow the instructions to install Velero [here](https://velero.io/docs/v1.13/basic-install/#install-the-cli).
 
-Now we will show see how to back up the eks cluster. Make sure the current kubectl context is set to eks cluster.Run the command below to create a backup of the wordpress application with mysql database running in wp-mysql namespace on eks cluster:
+Now we will show see how to back up the eks cluster.Velero creates one backup repo per namespace. For example, if backing up 2 namespaces, namespace1 and namespace2, using restic repository on AWS S3, the full backup repo path for namespace1 would be https://s3-us-east-1.amazonaws.com/bucket/restic/ns1 and for namespace2 would be https://s3-us-east-1.amazonaws.com/bucket/restic/ns2. 
+
+Velero supports two approaches of discovering pod volumes that need to be backed up using FSB:
+
+- Opt-in approach: Where every pod containing a volume to be backed up using FSB must be annotated with the volume’s name.
+- Opt-out approach: Where all pod volumes are backed up using FSB, with the ability to opt-out any volumes that should not be backed up.
+
+Since we need to backup only specific namespace which runs our wordpress and MySQL pods volumes we will be using opt-in approach to backup our pod volumes. To create a backup first we need to annotate each pod containing volume.
+
+Run the following command for each pod that contains a volume to back up. Make sure the current kubectl context is set to eks cluster.
 
 ```bash
-velero backup create eks-wp-mysql-backup --include-namespaces wp-mysql --default-volumes-to-fs-backup --wait
+kubectl -n YOUR_POD_NAMESPACE annotate pod/YOUR_POD_NAME backup.velero.io/backup-volumes=YOUR_VOLUME_NAME_1,YOUR_VOLUME_NAME_2,...
+```
+Alternatively, if you want to backup all pod volumes without having to apply annotation on the pod when using file system backup you set `--default-volumes-to-fs-backup` flag to backup command as shown below:
+
+```bash
+velero backup create BACKUP_NAME --include-namespaces wp-mysql  --default-volumes-to-fs-backup --wait
+```
+In our case I have used the below command to annotate the pods running our wordpress and mysql.
+
+```
+kubectl -n wp-msql annotate pod/wordpress-79d68d56b9-z6dlw backup.velero.io/backup-volumes=wordpress-persistent-storage
+
+kubectl -n wp-msql annotate pod/wordpress-mysql-6b7b9b4c87-7vdlx backup.velero.io/backup-volumes=mysql-persistent-storage
+```
+Run the command below to create a backup of the wordpress application with mysql database running in wp-mysql namespace on eks cluster:
+
+```bash
+velero backup create eks-wp-mysql-backup --include-namespaces wp-mysql --wait
 ```
 This will return a response similar to:
 
 ```
 Backup request "eks-wp-mysql-backup" submitted successfully.
-Run `velero backup describe eks-wp-mysql-backup` or `velero backup logs eks-wp-mysql-backup` for more details.
+Waiting for backup to complete. You may safely press ctrl-c to stop waiting - your backup will continue in the background.
+.............................................
+Backup completed with status: Completed. You may check for more information using the commands `velero backup describe eks-wp-mysql-backup` and `velero backup logs eks-wp-mysql-backup`.
 ```
 Validate a successful backup to check that the backup has been submitted successfully by running the command:
 
 ```bash
-velero backup describe eks-wp-mysql-backup
+velero backup describe eks-wp-mysql-backup --details
 ```
 Look for the field `Phase:` in the output of the command. If the current `Phase` is `InProgress`, then wait a few moments and try again until you see the `Phase: Completed`. You can see additional details of the backup, including information such as the start time and completion time, along with the number of items backed up.
+
+the output of the above command looks similar to:
+
+```bash
+Name:         eks-wp-mysql-backup
+Namespace:    velero
+Labels:       velero.io/storage-location=default
+Annotations:  velero.io/resource-timeout=10m0s
+              velero.io/source-cluster-k8s-gitversion=v1.28.3
+              velero.io/source-cluster-k8s-major-version=1
+              velero.io/source-cluster-k8s-minor-version=28
+
+Phase:  Completed
+
+
+Namespaces:
+  Included:  wpmsqlnew
+  Excluded:  <none>
+
+Resources:
+  Included:        *
+  Excluded:        <none>
+  Cluster-scoped:  auto
+
+Label selector:  <none>
+
+Or label selector:  <none>
+
+Storage Location:  default
+
+Velero-Native Snapshot PVs:  auto
+Snapshot Move Data:          false
+Data Mover:                  velero
+
+TTL:  720h0m0s
+
+CSISnapshotTimeout:    10m0s
+ItemOperationTimeout:  4h0m0s
+
+Hooks:  <none>
+
+Backup Format Version:  1.1.0
+
+Started:    2024-02-02 11:41:51 +0530 IST
+Completed:  2024-02-02 11:42:36 +0530 IST
+
+Expiration:  2024-03-03 11:41:51 +0530 IST
+
+Total items to be backed up:  72
+Items backed up:              72
+
+Velero-Native Snapshots: <none included>
+
+restic Backups (specify --details for more information):
+  Completed:  2
+```
 
 To get the backup details run the below command:
 
 ```bash
 velero backup get eks-wp-mysql-backup
 ```
-which should show a similar response as:
+you will see a similar response as:
 
 ```
 NAME                  STATUS      ERRORS   WARNINGS   CREATED                         EXPIRES   STORAGE LOCATION    SELECTOR
 eks-wp-mysql-backup   Completed   0        0          2024-01-28 13:20:34 +0530 IST   29d       default              <none>
+
+```
+To get the information about your pod volume backup, run the below command:
+
+```bash
+kubectl -n velero get podvolumebackups -l velero.io/backup-name=eks-wp-mysql-backup -o yaml
+```
+you will see a similar response as:
+
+```bash
+apiVersion: v1
+items:
+- apiVersion: velero.io/v1
+  kind: PodVolumeBackup
+  metadata:
+    annotations:
+      velero.io/pvc-name: mysql-pv-claim
+    creationTimestamp: "2024-01-28 13:20:30Z"
+    generateName: eks-wp-mysql-backup-
+    generation: 1
+    labels:
+      velero.io/backup-name: eks-wp-mysql-backup
+      velero.io/backup-uid: 6fee2294-6f20-4c88-8393-6307ab0ea30f
+      velero.io/pvc-uid: d9e001a4-25be-4541-89ea-71775a643d94
+    name: eks-wp-mysql-backup-csn7l
+    namespace: velero
+    ownerReferences:
+    - apiVersion: velero.io/v1
+      controller: true
+      kind: Backup
+      name: eks-wp-mysql-backup
+      uid: 6fee2294-6f20-4c88-8393-6307ab0ea30f
+    resourceVersion: "4242539"
+    uid: 99f7cdcb-1aa5-44af-a1e1-8e784e05ba2d
+  spec:
+    backupStorageLocation: default
+    node: ip-192-168-19-225.us-east-2.compute.internal
+    pod:
+      kind: Pod
+      name: wordpress-79d68d56b9-9qjnc
+      namespace: wp-mysql
+      ...
+      ...
 
 ```
 We can also see the backup files created by Velero in the Amazon S3 bucket we previously created:

@@ -1,3 +1,5 @@
+## Setup EKS Cluster
+
 ### Some Pre-Requisites:
 
 You need to have an AWS account. It cannot be the Starter Program since EKS is not supported there. Secondly, you must have a basic knowledge of AWS and Kubernetes. Third, you must have AWS CLI set up in your system with a dedicated profile allowing ADMIN Access so that it can directly use the EKS.
@@ -24,7 +26,15 @@ This command will create the entire cluster in 1 click. The creation of the clus
 
 After the cluster is launched, we need to connect our system with the pods so that we can work on the cluster. Kubernetes has been installed in the instances already by EKS. Therefore to connect our kubectl with the Kubernetes on the instances, we need to update the KubeConfiguration file first. For this, we use the following command:
 
-    aws eks update-kubeconfig  --name Ekscluster
+```bash
+PRIMARY_CONTEXT=eks_backup_velero
+REGION=us-east-1
+EKS_CLUSTER_NAME=eks-aks-k8s-cluster
+ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+aws eks --region $REGION update-kubeconfig --name $EKS_CLUSTER_NAME --alias $PRIMARY_CONTEXT
+
+```
+    
 
 We can check the connectivity with the command: kubectl cluster-info
 
@@ -38,10 +48,6 @@ Before we work, we need to create a namespace for our application in the K8s.
 
 For that we use the following command: kubectl create namespace wp-mysql
 
-Now we have to set it to be the default Namespace:
-
-    kubectl config set-context --current --namespace=wp-mysql
-
 For checking how many pods is running inside the namespace ‘**kube-system’** we have to execute : kubectl get pods -n kube-system
 
 ## Creating the Amazon EBS CSI driver IAM role
@@ -52,22 +58,19 @@ Determine whether you have an existing IAM OIDC provider for your cluster.
 
 - View your cluster's OIDC provider URL.
 ```bash
-aws eks describe-cluster --name eks-aks-k8s-cluster --query "cluster.identity.oidc.issuer" --output text
+OIDC_ID=$(aws eks describe-cluster --name $EKS_CLUSTER_NAME --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
 ```
-An example output is as follows.
-`https://oidc.eks.region-code.amazonaws.com/id/EXAMPLED539D4633E53DE1B71EXAMPLE`
-
 Determine whether an IAM OIDC provider with your cluster's ID is already in your account.
 
 ```bash
-aws iam list-open-id-connect-providers | grep OIDC_PROVIDER_ID
+aws iam list-open-id-connect-providers | grep $OIDC_ID
 ```
 Note: Replace ID of the oidc provider with your OIDC ID. If you receive a No OpenIDConnect provider found in your account error, you must create an IAM OIDC provider.
 
 - Create an IAM OIDC identity provider for your cluster with the following command
 
 ```bash
-eksctl utils associate-iam-oidc-provider --cluster eks-aks-k8s-cluster --approve 
+eksctl utils associate-iam-oidc-provider --cluster $EKS_CLUSTER_NAME --approve 
 ```
 
 Create an IAM trust policy file, similar to the following example
@@ -80,13 +83,13 @@ cat <<EOF > trust-policy.json
     {
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::YOUR_AWS_ACCOUNT_ID:oidc-provider/oidc.eks.YOUR_AWS_REGION.amazonaws.com/id/YOUR_OIDC ID"
+        "Federated": "arn:aws:iam::$ACCOUNT:oidc-provider/oidc.eks.$REGION.amazonaws.com/id/$OIDC_ID"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
-          "oidc.eks.YOUR_AWS_REGION.amazonaws.com/id/<XXXXXXXXXX45D83924220DC4815XXXXX>:aud": "sts.amazonaws.com",
-          "oidc.eks.YOUR_AWS_REGION.amazonaws.com/id/<XXXXXXXXXX45D83924220DC4815XXXXX>:sub": "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+          "oidc.eks.$REGION.amazonaws.com/id/$OIDC_ID:aud": "sts.amazonaws.com",
+          "oidc.eks.$REGION.amazonaws.com/id/$OIDC_ID:sub": "system:serviceaccount:kube-system:ebs-csi-controller-sa"
         }
       }
     }
@@ -94,8 +97,6 @@ cat <<EOF > trust-policy.json
 }
 EOF
 ```
-Note: Replace YOUR_AWS_ACCOUNT_ID with your account ID. Replace YOUR_AWS_REGION with your Region. Replace your OIDC ID with the output from creating your IAM OIDC provider.
-
 Create an IAM role named Amazon_EBS_CSI_Driver:
 
 ```bash
@@ -112,18 +113,12 @@ aws iam attach-role-policy \
 ```
 Deploy the Amazon EBS CSI driver.
 ```bash
-aws eks create-addon \
- --cluster-name eks-aks-k8s-cluster \
- --addon-name aws-ebs-csi-driver \
- --service-account-role-arn arn:aws:iam::
-YOUR_AWS_ACCOUNT_ID:role/AmazonEKS_EBS_CSI_DriverRole
+aws eks create-addon --cluster-name $EKS_CLUSTER_NAME --addon-name aws-ebs-csi-driver --service-account-role-arn arn:aws:iam::$ACCOUNT:role/AmazonEKS_EBS_CSI_DriverRole
 ```
-Note: YOUR_AWS_ACCOUNT_ID with your account ID.
-
 Verify that the EBS CSI driver installed successfully:
 
 ```bash
-eksctl get addon --cluster eks-aks-k8s-cluster | grep ebs
+eksctl get addon --cluster $EKS_CLUSTER_NAME | grep ebs
 ```
 A successfully installation returns the following output:
-`aws-ebs-csi-driver    vx.xx.x-eksbuild.x    ACTIVE    0    arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/AmazonEKS_EBS_CSI_Driver`
+`aws-ebs-csi-driver    vx.xx.x-eksbuild.x    ACTIVE    0    arn:aws:iam::$ACCOUNT:role/AmazonEKS_EBS_CSI_Driver`

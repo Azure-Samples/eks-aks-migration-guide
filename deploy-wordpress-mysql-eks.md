@@ -17,9 +17,9 @@ kubectl get pods
 The response should be like this:
 
 ```bash
-NAME                               READY   STATUS    RESTARTS      AGE
-wordpress-79d68d56b9-z6dlw         1/1     Running   2 (41h ago)   41h
-wordpress-mysql-6b7b9b4c87-7vdlx   1/1     Running   0             41h
+NAME                               READY   STATUS    RESTARTS   AGE
+wordpress-79d68d56b9-9qjnc         1/1     Running   0          11m
+wordpress-mysql-6b7b9b4c87-bzvl5   1/1     Running   0          11m
 ```
 
 Verify that a PersistentVolume got dynamically provisioned.
@@ -31,8 +31,8 @@ The response should be like this:
 
 ```bash
 NAME             STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-mysql-pv-claim   Bound    pvc-f58ee046-1ae6-4c63-8c1e-c43148d722aa   20Gi       RWO            default        41h
-wp-pv-claim      Bound    pvc-bfb68065-3096-4864-ad9f-67b92d3d774f   20Gi       RWO            default        41h
+mysql-pv-claim   Bound    pvc-1e879b20-5794-4258-b9be-64c9a9de6bca   20Gi       RWO            gp2            11m
+wp-pv-claim      Bound    pvc-40345585-969d-4b37-91b0-eaca60b79661   20Gi       RWO            gp2            11m
 ```
 
 Verify that the Secret exists by running the following command:
@@ -44,7 +44,7 @@ The response should be like this:
 
 ```bash
 NAME                    TYPE     DATA   AGE
-mysql-pass-8d668bfdmt   Opaque   1      42h
+mysql-pass-8d668bfdmt   Opaque   1      12m
 ```
 
 Get the `External-IP` of our wordpress service by running the below command and browse your wordpress site:
@@ -55,11 +55,11 @@ kubectl get services wordpress
 The response should be like this:
 
 ```bash
-NAME        TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-wordpress   LoadBalancer   10.0.206.193   X.XXX.X.XX   80:30569/TCP   41h
+NAME        TYPE           CLUSTER-IP     EXTERNAL-IP                             PORT(S)        AGE
+wordpress   LoadBalancer   10.0.206.193   http://xx.us-east-2.elb.amazonaws.com   80:30569/TCP   13m
 ```
 
-On visiting the `External-IP`, we will reach this page.
+On visiting the `External-IP` URL, we will reach this page.
 
 ![](media/Wordpress-Install.png)
 
