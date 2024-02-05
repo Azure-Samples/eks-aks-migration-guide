@@ -1,6 +1,6 @@
 ## Map the storage class of your EKS to AKS
 
-As AKS and EKS use different storageClassNames for the persistent volume claims, we need to create a configMap that will translate the source storageClassNames to target class name. Since EKS use `gp2` as a default storage class for EBS volumes so we will create the file configMap.yaml with the following content to translate it to `default` class for your AKS cluster.
+As AKS and EKS use different storageClassNames for the persistent volume claims, we need to create a `configMap` that will translate the source storageClassNames to target class name. Since EKS use `gp2` as a default storage class for EBS volumes so we will create the file configMap.yaml with the following content to translate it to `default` class for your AKS cluster.
 
 ```bash
 apiVersion: v1
