@@ -261,8 +261,6 @@ Validate a successful backup to check that the backup has been submitted success
 ```bash
 velero backup describe eks-wp-mysql-backup --details
 ```
-Look for the field `Phase:` in the output of the command. If the current `Phase` is `InProgress`, then wait a few moments and try again until you see the `Phase: Completed`. You can see additional details of the backup, including information such as the start time and completion time, along with the number of items backed up.
-
 the output of the above command looks similar to:
 
 ```bash
@@ -374,7 +372,7 @@ items:
       ...
 
 ```
-We can also see the backup files created by Velero in the Amazon S3 bucket we previously created:
+To check the backup files created by Velero in the Amazon S3 bucket previously created:
 
 ```bash
 aws s3 ls $BUCKET/backups/eks-wp-mysql-backup/
