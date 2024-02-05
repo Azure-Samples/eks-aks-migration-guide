@@ -37,7 +37,7 @@ Gather your AWS access key and secret access key, and then set these environment
 
 These credentials are used to generate pre-signed URLs that are used to copy objects.
 
-#####  Copy a bucke
+#####  Copy a bucket
 
 ```bash
 azcopy copy 'https://s3.amazonaws.com/$BLOB_CONTAINER' 'https://$AZURE_STORAGE_ACCOUNT_ID.blob.core.windows.net/$BLOB_CONTAINER' --recursive=true
