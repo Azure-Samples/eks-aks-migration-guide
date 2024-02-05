@@ -41,12 +41,12 @@ __Restore__: Use Velero to restore the backup data to the Azure AKS cluster, rec
 
 In this article I am going to explain each steps in details starting from the creation of EKS cluster, deploying WordPress and MySQL applications to eks cluster, setting up Velero in EKS for taking backups, setting up AKS cluster, setting up Velero in AKS for restoring backups to AKS cluster.
 
-__Step 1__: [Creating EKS Cluster with EBS Driver](setup-eks-cluster.md)
-__Step 2__: [Deploy WordPress and MySQL Application](deploy-wordpress-mysql-eks.md)
-__Step 3__: [Setup Velero in EKS and take bakup](setup-velero-backup-eks.md)
-__Step 4__: [Setting Up AKS Cluster](setup-aks-cluster.md)
-__Step 5__: [Setup Velero in AKS with blob storage](setup-velero-aks.md)
-__Step 6__: [Transfer Backup Data from AWS S3 Bucket and Restore in Azure blob storage using AzCopy](copy-data-using-Azcopy.md)
-__Step 7__: [Map the storage class of your EKS to AKS](map-storageclass-eks-aks.md)
-__Step 8__: [Restore the backup to AKS cluster](restore-aks-cluster.md)
+- Step 1: [Creating EKS Cluster with EBS Driver](setup-eks-cluster.md)
+- Step 2: [Deploy WordPress and MySQL Application](deploy-wordpress-mysql-eks.md)
+- Step 3: [Setup Velero in EKS and take bakup](setup-velero-backup-eks.md)
+- Step 4: [Setting Up AKS Cluster](setup-aks-cluster.md)
+- Step 5: [Setup Velero in AKS with blob storage](setup-velero-aks.md)
+- Step 6: [Transfer Backup Data from AWS S3 Bucket and Restore in Azure blob storage using AzCopy](copy-data-using-Azcopy.md)
+- Step 7: [Map the storage class of your EKS to AKS](map-storageclass-eks-aks.md)
+- Step 8: [Restore the backup to AKS cluster](restore-aks-cluster.md)
 
