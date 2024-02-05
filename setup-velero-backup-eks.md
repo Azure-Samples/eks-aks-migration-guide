@@ -131,13 +131,13 @@ aws iam attach-role-policy --role-name $VELERO_ROLE --policy-arn $POLICY_ARN
 
 ### Installing Velero server in EKS Cluster
 
-Velero supports backing up and restoring Kubernetes volumes attached to pods from the file system of the volumes, called File System Backup (FSB shortly) or Pod Volume Backup. The data movement is fulfilled by using modules from free open-source backup tools [restic](https://github.com/restic/restic) and [kopia](https://github.com/kopia/kopia). Velero allows you to take snapshots of persistent volumes as part of your backups.
+Velero supports backing up and restoring Kubernetes volumes attached to pods from the file system of the volumes, called File System Backup (FSB shortly) or Pod Volume Backup. The data movement is fulfilled by using modules from free open-source backup tools [restic](https://github.com/restic/restic) and [kopia](https://github.com/kopia/kopia). Velero allows to take snapshots of persistent volumes as part of backups.
 
 Velero `Node Agent` is a Kubernetes daemonset that hosts FSB modules, i.e., restic, kopia uploader & repository. Velero allows us to take snapshots of persistent volumes as part of our backups using one of the supported cloud providers’ block storage offerings. In our case it is Amazon EBS Volumes. 
 
-As in our case we need to backup persitent data attached to EBS volume we will set the `--deployNodeAgent=true` , `--snapshotsEnabled=true` and `--uploaderType="restic"` flags with our velero server installation.
+**As in our case we need to backup persitent data attached to EBS volume we will set the `--deployNodeAgent=true` , `--snapshotsEnabled=true` and `--uploaderType="restic"` flags with velero server installation.**
 
-Run the following command to install Velero in our EKS cluster:
+Run the following command to install Velero in EKS cluster:
 
 ```bash
 PRIMARY_CONTEXT=eks_backup_velero
@@ -172,9 +172,9 @@ EOF
 ```bash
 helm install velero vmware-tanzu/velero -f values.yaml --namespace velero --set snapshotsEnabled=true --set deployNodeAgent=true --set uploaderType="restic"
 ```
-With this command velero gets the parameters from the BackupStorageLocation config to compose the URL to the backup storage.
+With this command, velero gets the parameters from the BackupStorageLocation config to compose the URL to the backup storage.
 
-We can check that the Velero server was successfully installed by running this command:
+To Verify velero server installation, running the follwoing command:
 
 ```bash
 kubectl get pods –n velero
@@ -211,28 +211,27 @@ wget https://github.com/vmware-tanzu/velero/releases/download/v1.13.0/velero-v1.
 tar -xvf velero-v1.13.0-linux-amd64.tar.gz
 mv velero /usr/local/bin/velero
 ```
-
 Windows:
 ```
 choco install velero
 ```
 Installation instructions vary depending on your operating system. Follow the instructions to install Velero [here](https://velero.io/docs/v1.13/basic-install/#install-the-cli).
 
-Now we will show see how to back up the eks cluster.Velero creates one backup repo per namespace. For example, if backing up 2 namespaces, namespace1 and namespace2, using restic repository on AWS S3, the full backup repo path for namespace1 would be https://s3-us-east-1.amazonaws.com/bucket/restic/ns1 and for namespace2 would be https://s3-us-east-1.amazonaws.com/bucket/restic/ns2. 
+Now we will see how to back up the eks cluster. Velero creates one backup repo per namespace. For example, if we are backing up 2 namespaces, ns1 and ns2, using restic repository on AWS S3, the full backup repo path for namespace1 would be https://s3-us-east-1.amazonaws.com/bucket/restic/ns1 and for namespace2 would be https://s3-us-east-1.amazonaws.com/bucket/restic/ns2. 
 
 Velero supports two approaches of discovering pod volumes that need to be backed up using FSB:
 
 - Opt-in approach: Where every pod containing a volume to be backed up using FSB must be annotated with the volume’s name.
 - Opt-out approach: Where all pod volumes are backed up using FSB, with the ability to opt-out any volumes that should not be backed up.
 
-Since we need to backup only specific namespace which runs our wordpress and MySQL pods volumes we will be using opt-in approach to backup our pod volumes. To create a backup first we need to annotate each pod containing volume.
+Since we need to backup only specific namespace which runs wordpress and MySQL pods volumes we will be using `opt-in approach` to backup pod volumes. To create a backup, we need to annotate each pod containing volume.
 
 Run the following command for each pod that contains a volume to back up. Make sure the current kubectl context is set to eks cluster.
 
 ```bash
 kubectl -n YOUR_POD_NAMESPACE annotate pod/YOUR_POD_NAME backup.velero.io/backup-volumes=YOUR_VOLUME_NAME_1,YOUR_VOLUME_NAME_2,...
 ```
-Alternatively, if you want to backup all pod volumes without having to apply annotation on the pod when using file system backup you set `--default-volumes-to-fs-backup` flag to backup command as shown below:
+Alternatively, if you want to backup all pod volumes without having to apply annotation on the pod when using file system backup set `--default-volumes-to-fs-backup` flag to backup command as shown below:
 
 ```bash
 velero backup create BACKUP_NAME --include-namespaces wp-mysql  --default-volumes-to-fs-backup --wait
