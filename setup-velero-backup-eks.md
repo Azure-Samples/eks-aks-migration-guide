@@ -1,22 +1,13 @@
 ## Setup Velero for EKS Backup
 
-### Some Pre-Requisites:
-AWS account with permissions to create and manage service accounts
-EKS cluster [see](Setting-up-eks-cluster.md)
-S3 bucket for backup storage
-eksctl v0.167.0 or higher See [Installing or upgrading eksctl](https://eksctl.io/installation/).
-AWS CLI version 2
-kubectl, Helm v3
-
 #### Storage Bucket & Policy Setup
 
-Create an S3 Bucket to store backups
+**Create an S3 Bucket to store backups**
 
-Velero uses S3 to store EKS backups when running in AWS. Here we’ll create the S3 bucket that will store our EKS backup copy.To declare the unique S3 bucket name and appropriate AWS region as environment variables in a Linux or MacOS terminal, you can use the command:
+Velero uses S3 to store EKS backups in AWS. Here, we will create the S3 bucket to store EKS backup copy. To declare the unique S3 bucket name and appropriate AWS region as environment variables in a Linux or MacOS terminal, you can use the command:
 
-Replace <BUCKETNAME> and <REGION> with your own values below.
 ```bash
-BUCKET=<BUCKETNAME>
+BUCKET=aws-velero-bucket
 REGION=us-east-1
 aws s3 mb s3://$BUCKET --region $REGION
 ```
