@@ -1,6 +1,6 @@
-## Restore EKS Backup to AKS cluster using Velero
+## Restore Backup to AKS cluster
 
-This section shows how to restore your EKS backup that was created with Velero to AKS cluster.
+This section shows how to restore EKS backup to AKS cluster.
 
 Once the backup is available to azure storage, test to ensure the restoration is working as intended. First, switch the Kubernetes context to the AKS cluster:
 
@@ -8,10 +8,10 @@ Once the backup is available to azure storage, test to ensure the restoration is
 $RECOVERY_CONTEXT="aks_restore_velero"
 kubectl config use-context $RECOVERY_CONTEXT
 ```
-Regardless of how volumes are discovered for backup using FSB, the process of restoring remains the same. To restore the cluster resources, run the command:
+To restore the cluster resources, run the command:
 
 ```Azcli
-velero restore create aks-wp-mysql-restore --from-backup eks-wp-mysql-backup --wait
+velero restore create aks-wp-mysql-restore --from-backup eks-wp-mysql-backup
 ```
 The output should be similar to:
 
@@ -19,7 +19,7 @@ The output should be similar to:
 Restore request "aks-wp-mysql-restore" submitted successfully.
 Run `velero restore describe aks-wp-mysql-restore` or `velero restore logs aks-wp-mysql-restore` for more details.
 ```
-To verify the status of your restore progress you can run the below command:
+To verify the status of your restore progress, run the below command:
 
 ```bash
 velero restore describe aks-wp-mysql-restore --details
@@ -66,7 +66,7 @@ ItemOperationTimeout:       4h0m0s
 Preserve Service NodePorts:  auto
 ```
 
-### Validate the restored Resources in AKS cluster
+### Validate the restored resources in AKS cluster
 
 To verify that all the resources are succesfully restored from EKS backup, run the below commands:
 
