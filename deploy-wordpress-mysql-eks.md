@@ -70,8 +70,6 @@ On visiting the `External-IP` URL, we will reach this page.
 > [!WARNING]
 > Do not leave your WordPress installation on this page. If another user finds it, they can set up a website on your instance and use it to serve malicious content.
 
-Either install WordPress by creating a username and password or delete your instance.
-
 After configuration and posting our first post, we will reach to this following page:
 
 ![](media/Wordpress-Landing-Page.png)
