@@ -1,4 +1,4 @@
-## Setup Velero for EKS Backup
+## Setup Velero in EKS
 
 #### Create an S3 Bucket to store backups
 
