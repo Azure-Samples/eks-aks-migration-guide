@@ -1,11 +1,11 @@
 
-### Copy data from Amazon S3 to Azure Storage by using AzCopy
+### Copy data from Amazon S3 to Azure blob Storage using AzCopy
 
-As we already have the velero client installed in the previous step lets copy the data from AWS bucket to Azure Blob Storage using AzCopy. AzCopy is a command-line utility that you can use to copy blobs or files to or from a storage account.
+AzCopy is a command-line utility that you can use to copy blobs or files to or from a storage account.
 
 #### Download and install AzCopy
 
-These files are compressed as a zip file (Windows and Mac) or a tar file (Linux). To download and decompress the tar file on Linux, see the documentation for your Linux distribution.
+The files in the below download links are compressed as a zip file (Windows and Mac) or a tar file (Linux). To download and decompress the tar file on Linux, see the documentation for your Linux distribution.
 
 For detailed information on AzCopy releases, see the [AzCopy release page](https://github.com/Azure/azure-storage-azcopy/releases).
 
