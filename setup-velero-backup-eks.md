@@ -390,3 +390,6 @@ We can also see the backup files created by Velero in the Amazon S3 bucket we pr
 ```bash
 aws s3 ls $BUCKET/backups/eks-wp-mysql-backup/
 ```
+
+### Next Step
+[Setting Up AKS Cluster](setup-aks-cluster.md)

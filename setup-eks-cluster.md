@@ -1,20 +1,26 @@
 ## Setup EKS Cluster
 
+This guide helps you to create all of the required resources to get started with Amazon Elastic Kubernetes Service (Amazon EKS) using eksctl, a simple command line utility for creating and managing Kubernetes clusters on Amazon EKS. At the end of this tutorial, you will have a running Amazon EKS cluster that you can deploy applications to.
+
 ### Some Pre-Requisites:
 
-You need to have an AWS account. It cannot be the Starter Program since EKS is not supported there. Secondly, you must have a basic knowledge of AWS and Kubernetes. Third, you must have AWS CLI set up in your system with a dedicated profile allowing ADMIN Access so that it can directly use the EKS.
+You need to have an AWS account. Secondly, you must have a basic knowledge of AWS and Kubernetes. Third, you must have AWS CLI set up in your system with a dedicated profile allowing ADMIN Access so that it can directly use the EKS.
 
-Although AWS CLI provides commands to manage EKS, but they are not efficient enough to perform complex tasks. Therefore, we are going to use another CLI built especially for EKS. You can download it from the GitHub link given below.
-[**weaveworks/eksctl**
-*eksctl is a simple CLI tool for creating clusters on EKS — Amazon’s new managed Kubernetes service for EC2. It is…*github.com](https://github.com/weaveworks/eksctl)
+Before starting this tutorial, you must install and configure the following tools and resources that you need to create and manage an Amazon EKS cluster.
 
-Apart from that, we need to have **kubectl** installed in our system too, for communicating with the Pods running on EKS. It is a managed service so everything will be managed by it except kubectl command because it is a client program, which will help us to connect with the pods.
-[**Install and Set Up kubectl**
-*The Kubernetes command-line tool, kubectl, allows you to run commands against Kubernetes clusters. You can use kubectl…*kubernetes.io](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+`kubectl` – A command line tool for working with Kubernetes clusters. For more information, see [Installing or updating kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html).
 
-### Starting the EKS Cluster
+`eksctl` – A command line tool for working with EKS clusters that automates many individual tasks. For more information, see [Installation](https://eksctl.io/installation) in the `eksctl` documentation.
 
-To start the EKS cluster, we need to set up a YAML file containing the infrastructure of the cluster. Information like the number of Worker Nodes, allowed EC2 instances, AWS key for connecting the instances with our local terminal and many more, are mentioned in this file.
+`Required IAM permissions` – The IAM security principal that you're using must have permissions to work with Amazon EKS IAM roles, service linked roles, AWS CloudFormation, a VPC, and related resources. For more information, see [Actions, resources, and condition keys for Amazon Elastic Container Service for Kubernetes](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonelastickubernetesservice.html) and [Using service-linked roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html) in the IAM User Guide. You must complete all steps in this guide as the same user. To check the current user, run the following command:
+
+```bash
+aws sts get-caller-identity
+```
+
+### Create Amazon EKS cluster and nodes
+
+To create the EKS cluster, we need to set up a YAML file containing the infrastructure of the cluster. Information like the number of Worker Nodes, allowed EC2 instances, AWS key for connecting the instances with our local terminal and many more, are mentioned in file named `cluster.yaml` in this repo.
 
 After we write the desired infrastructure in our YAML file, we will have to execute the file with the EKSCTL CLI we have installed.
 
@@ -24,7 +30,7 @@ This command will create the entire cluster in 1 click. The creation of the clus
 
 ### Setting up the kubectl CLI
 
-After the cluster is launched, we need to connect our system with the pods so that we can work on the cluster. Kubernetes has been installed in the instances already by EKS. Therefore to connect our kubectl with the Kubernetes on the instances, we need to update the KubeConfiguration file first. For this, we use the following command:
+After the cluster is launched, we need to connect our system with the pods so that we can work on the cluster. Kubernetes has been installed in the instances created by EKS. Therefore to connect our kubectl with the Kubernetes on the instances, we need to update the KubeConfiguration file first. For this, we use the following command:
 
 ```bash
 PRIMARY_CONTEXT=eks_backup_velero
@@ -34,21 +40,17 @@ ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 aws eks --region $REGION update-kubeconfig --name $EKS_CLUSTER_NAME --alias $PRIMARY_CONTEXT
 
 ```
-    
-
 We can check the connectivity with the command: kubectl cluster-info
 
-For finding the number of nodes: kubectl get nodes
+For finding the number of nodes: `kubectl get nodes`
 
-For finding the number of pods: kubectl get pods
+For finding the number of pods: `kubectl get pods`
 
-To get detailed information of the instances on which the pods are running: kubectl get pods -o wide
+To get detailed information of the instances on which the pods are running: `kubectl get pods -o wide`
 
-Before we work, we need to create a namespace for our application in the K8s.
+Before we deploy our kubenetes workloads, we need to create a namespace for our application in the K8s.
 
-For that we use the following command: kubectl create namespace wp-mysql
-
-For checking how many pods is running inside the namespace ‘**kube-system’** we have to execute : kubectl get pods -n kube-system
+For that we use the following command: `kubectl create namespace wp-mysql`
 
 ## Creating the Amazon EBS CSI driver IAM role
 
@@ -122,3 +124,6 @@ eksctl get addon --cluster $EKS_CLUSTER_NAME | grep ebs
 ```
 A successfully installation returns the following output:
 `aws-ebs-csi-driver    vx.xx.x-eksbuild.x    ACTIVE    0    arn:aws:iam::$ACCOUNT:role/AmazonEKS_EBS_CSI_Driver`
+
+### Next Step
+[Deploy WordPress and MySQL Application](deploy-wordpress-mysql-eks.md)

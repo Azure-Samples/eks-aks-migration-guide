@@ -1,14 +1,14 @@
 ## Installing WordPress and MySQL
 
-Now, we are ready to install WordPress and Mysql in our cluster. For that, we need to copy the 3 files given in a folder.
+Now, we are ready to install WordPress and Mysql in our cluster. For that, we need to copy the 3 files given in a folder named `Wordpress-Mysql`.
 
-This file contains information about the different settings to be applied to our MySQL pod.
+This file `mysql-deployment.yml` contains information about the different settings to be applied to our MySQL pod.
 
-Similarly, this file contains information about the different settings to be applied to our WordPress pod.
+Similarly, the file `wordpress-deployment.yml` contains information about the different settings to be applied to our WordPress pod.
 
-At last, we create a **Kustomization file **to specify the order of execution of the files along with the secret keys.
+At last, we have a `kustomization.yml` file to specify the order of execution of the files along with the secret keys.
 
-After executing the scripts using the command `kubectl apply -k ./` in a folder Wordpress-Mysql, we can build the infrastructure.
+By running the command `kubectl create -k . -n wp-mysql` within the Wordpress-Mysql directory,  the scripts will be execute and create all the resources for deploying a WordPress site and a MySQL database.
 
 Verify that the Pod is running by running the following command:
 ```bash
@@ -66,3 +66,6 @@ On visiting the `External-IP` URL, we will reach this page.
 After configuration and posting our first post, we will reach to this following page:
 
 ![](media/Wordpress-Landing-Page.png)
+
+### Next Step
+[Setup Velero in EKS and take bakup](setup-velero-backup-eks.md)

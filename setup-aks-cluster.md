@@ -49,3 +49,6 @@ Verify the connection to your cluster using the `kubectl get`` command. This com
 kubectl get nodes
 ```
 The following sample output shows the single node created in the previous steps. Make sure the node status is Ready.
+
+### Next Step
+[Setup Velero in AKS with blob storage](setup-velero-aks.md)
