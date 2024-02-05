@@ -1,8 +1,6 @@
 ## Setup Velero for EKS Backup
 
-#### Storage Bucket & Policy Setup
-
-**Create an S3 Bucket to store backups**
+#### Create an S3 Bucket to store backups
 
 Velero uses S3 to store EKS backups in AWS. Here, we will create the S3 bucket to store EKS backup copy. To declare the unique S3 bucket name and appropriate AWS region as environment variables in a Linux or MacOS terminal, you can use the command:
 
@@ -12,7 +10,7 @@ REGION=us-east-1
 aws s3 mb s3://$BUCKET --region $REGION
 ```
 
-Create an IAM policy to grant Velero permissions
+#### Create an IAM policy to grant Velero permissions
 
 Velero performs a number of API calls to resources in EC2 and S3 to perform snapshots and save the backup to the S3 bucket. The following IAM policy will grant Velero the necessary permissions.
 
@@ -92,7 +90,8 @@ POLICY_ARN='<<Paste the ARN which you copied from the previous step here>>'
 #POLICY_ARN=$(aws iam list-policies --query 'Policies[?PolicyName=='$POLICY_NAME'].Arn' --output text)
 ```
 
-Create an IAM role and attach the trust relationship policy
+#### Create an IAM role and attach the trust relationship policy
+
 ```bash
 EKS_CLUSTER_NAME=eks-aks-k8s-cluster
 NAMESPACE=velero
