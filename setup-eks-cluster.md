@@ -26,7 +26,7 @@ eksctl create cluster -f cluster.yaml
 ```
 The creation of the cluster would take a certain amount of time.
 
-### View EKS resources
+### Connect to the cluster
 
 After cluster creation is complete, view the kubenetes resources created in EKS using the following command.
 
