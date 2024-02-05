@@ -9,10 +9,10 @@ However, shifting workloads between cloud providers is not always straightforwar
 ## Understanding Amazon EKS and Azure AKS
 Amazon EKS and Azure AKS are fully managed Kubernetes services offered by Amazon Web Services (AWS) and Microsoft Azure, respectively. These services abstract the complexities of Kubernetes cluster management, including infrastructure provisioning, scaling, and maintenance, while providing high availability and reliability.
 
-### Amazon EKS (Elastic Kubernetes Service)
+- **Amazon EKS (Elastic Kubernetes Service)**
 Amazon EKS enables users to deploy, manage, and scale containerized applications using Kubernetes on AWS. It integrates seamlessly with other AWS services, offering features such as auto-scaling, managed node groups, and AWS Fargate integration. For more details [See](https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html)
 
-### Azure AKS (Azure Kubernetes Service)
+- **Azure AKS (Azure Kubernetes Service)**
 Azure AKS provides a similar managed Kubernetes experience on the Azure cloud platform. It offers features such as automatic updates, horizontal scaling, and integration with Azure Active Directory and Azure Monitor. For more details [See](https://learn.microsoft.com/en-in/azure/aks/).
 
 ## Introduction to Velero
@@ -20,26 +20,26 @@ Velero is an open-source tool for Kubernetes cluster backup, restore, and migrat
 
 Key features of Velero include:
 
-1. __Backup and Restore__: Velero enables users to capture snapshots of entire Kubernetes clusters, including namespaces, resources, and persistent volumes. These backups can be restored to the same cluster or migrated to another environment.
+- __Backup and Restore__: Velero enables users to capture snapshots of entire Kubernetes clusters, including namespaces, resources, and persistent volumes. These backups can be restored to the same cluster or migrated to another environment.
 
-2. __Plugin Architecture__: Velero supports various cloud providers and storage solutions through its plugin architecture. Users can configure Velero to work with cloud-specific APIs and storage providers, ensuring compatibility across different environments.
+- __Plugin Architecture__: Velero supports various cloud providers and storage solutions through its plugin architecture. Users can configure Velero to work with cloud-specific APIs and storage providers, ensuring compatibility across different environments.
 
-3. __Schedule and Retention Policies__: Velero allows users to define backup schedules and retention policies, ensuring that backups are performed regularly and retained for the desired duration.
+- __Schedule and Retention Policies__: Velero allows users to define backup schedules and retention policies, ensuring that backups are performed regularly and retained for the desired duration.
 
 for more details about velero, [See](https://velero.io/docs/v1.13/)
 
 ## Migration Process Overview
 Migrating from Amazon EKS to Azure AKS using Velero involves several distinct steps, each designed to ensure a smooth and seamless transition. The migration process can be summarized as follows:
 
-__Preparation__: Prepare both the source (Amazon EKS) and target (Azure AKS) environments, ensuring that necessary permissions, credentials, and configurations are in place.
+- __Preparation__: Prepare both the source (Amazon EKS) and target (Azure AKS) environments, ensuring that necessary permissions, credentials, and configurations are in place.
 
-__Backup__: Use Velero to create a backup of the Amazon EKS cluster, capturing all relevant resources and data.
+- __Backup__: Use Velero to create a backup of the Amazon EKS cluster, capturing all relevant resources and data.
 
-__Storage Transfer__: Transfer the Velero backup data from the source cloud provider (AWS S3 bucket) to the target cloud provider (Azure Storage account).
+- __Storage Transfer__: Transfer the Velero backup data from the source cloud provider (AWS S3 bucket) to the target cloud provider (Azure Storage account).
 
-__Restore__: Use Velero to restore the backup data to the Azure AKS cluster, recreating the Kubernetes resources and configurations.
+- __Restore__: Use Velero to restore the backup data to the Azure AKS cluster, recreating the Kubernetes resources and configurations.
 
-Below are the steps for the migration guide from EKS to AKS.
+#### Below are the steps for the migration guide from EKS to AKS.
 > [!NOTE] 
 **The steps and configurations outlined in this article are based on the AWS services and tools available as of Jan-2024. AWS frequently updates its services, and there may be changes or new features introduced after this date. It is advisable to refer to the latest AWS documentation and release notes for any updates or modifications to the procedures outlined in this article.**
 
