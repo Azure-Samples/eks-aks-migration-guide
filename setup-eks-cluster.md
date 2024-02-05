@@ -119,7 +119,9 @@ Verify that the EBS CSI driver installed successfully:
 eksctl get addon --cluster $EKS_CLUSTER_NAME | grep ebs
 ```
 A successfully installation returns the following output:
-`aws-ebs-csi-driver    vx.xx.x-eksbuild.x    ACTIVE    0    arn:aws:iam::$ACCOUNT:role/AmazonEKS_EBS_CSI_Driver`
+```
+aws-ebs-csi-driver    vx.xx.x-eksbuild.x    ACTIVE    0    arn:aws:iam::$ACCOUNT:role/AmazonEKS_EBS_CSI_Driver
+```
 
 ### Next Step
 [Deploy WordPress and MySQL Application](deploy-wordpress-mysql-eks.md)
