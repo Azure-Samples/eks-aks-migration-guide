@@ -9,7 +9,7 @@ The files in the below download links are compressed as a zip file (Windows and 
 
 For detailed information on AzCopy releases, see the [AzCopy release page](https://github.com/Azure/azure-storage-azcopy/releases).
 
-First, download the AzCopy executable file to any directory on your computer. AzCopy is just an executable file, so there's nothing to install.
+Download the AzCopy executable file to any directory on your computer. AzCopy is just an executable file, so there's nothing to install.
 
 [Windows 64-bit (zip)](https://aka.ms/downloadazcopy-v10-windows)
 [Windows 32-bit (zip)](https://aka.ms/downloadazcopy-v10-windows-32bit)
@@ -25,7 +25,7 @@ Run the below command to Authorize with Azure Storage
 AzCopy login
 ```
 
-#####  Authorize with Azure Storage
+#####  Authorize with S3 bucket
 
 Gather your AWS access key and secret access key, and then set these environment variables:
 
@@ -37,7 +37,7 @@ Gather your AWS access key and secret access key, and then set these environment
 
 These credentials are used to generate pre-signed URLs that are used to copy objects.
 
-**Copy a bucket**
+#####  Copy a bucke
 
 ```bash
 azcopy copy 'https://s3.amazonaws.com/$BLOB_CONTAINER' 'https://$AZURE_STORAGE_ACCOUNT_ID.blob.core.windows.net/$BLOB_CONTAINER' --recursive=true
