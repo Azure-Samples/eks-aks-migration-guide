@@ -40,9 +40,9 @@ These credentials are used to generate pre-signed URLs that are used to copy obj
 #####  Copy a bucket
 
 ```bash
-azcopy copy 'https://s3.amazonaws.com/$BLOB_CONTAINER' 'https://$AZURE_STORAGE_ACCOUNT_ID.blob.core.windows.net/$BLOB_CONTAINER' --recursive=true
+azcopy copy 'https://s3.amazonaws.com/$Bucket' 'https://$AZURE_STORAGE_ACCOUNT_ID.blob.core.windows.net/$BLOB_CONTAINER' --recursive=true
 ```
-`$Bucket` is the name of aws s3 bucket that we have created to storage velero backup in previous step.
+`$Bucket` is the name of aws s3 bucket that we have created to store velero backup in [Step 3](setup-velero-backup-eks.md).
 `$AZURE_STORAGE_ACCOUNT_ID` and `$BLOB_CONTAINER` is the name of Azure blob storage account and container name that we have created earlier in this article.
 
 For more details, See [Copy data from Amazon S3 to Azure Storage by using AzCopy](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-s3).
