@@ -2,19 +2,13 @@
 
 Azure Kubernetes Service (AKS) is a managed Kubernetes service that lets you quickly deploy and manage clusters. 
 
-### Some Pre-Requisites:
+### Prerequisites:
 
 An active Azure subscription. If you don't have one, create a free Azure account before you begin.
 Azure CLI version 2.50.0 or later installed. to install or upgrade, see [Install Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli).
 `aks-preview Azure CLI extension of version 0.5.145 or later installed.
 
 You can run az --version to verify above versions.
-
-Apart from that, we need to have **kubectl** installed in our system too, for communicating with the Pods running on EKS. It is a managed service so everything will be managed by it except kubectl command because it is a client program, which will help us to connect with the pods.
-[**Install and Set Up kubectl**
-*The Kubernetes command-line tool, kubectl, allows you to run commands against Kubernetes clusters. You can use kubectl…*kubernetes.io](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-
-### Starting the EKS Cluster
 
 ## Create a resource group
 
