@@ -57,20 +57,20 @@ To check the existing IAM OIDC provider for cluster.
 ```bash
 OIDC_ID=$(aws eks describe-cluster --name $EKS_CLUSTER_NAME --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
 ```
-Determine whether an IAM OIDC provider with the cluster's ID is already existt.
+Check whether an IAM OIDC provider exists with the cluster's ID.
 
 ```bash
 aws iam list-open-id-connect-providers | grep $OIDC_ID
 ```
-Note: Replace ID of the oidc provider with your OIDC ID. If you receive a No OpenIDConnect provider found in your account error, you must create an IAM OIDC provider.
+Note: If you receive a message "No OpenIDConnect provider found". create an IAM OIDC provider.
 
-- Create an IAM OIDC identity provider for your cluster with the following command
+- Create an IAM OIDC identity provider for cluster with the following command
 
 ```bash
 eksctl utils associate-iam-oidc-provider --cluster $EKS_CLUSTER_NAME --approve 
 ```
 
-Create an IAM trust policy file, similar to the following example
+Create an IAM trust policy file, using the below template:
 
 ```bash
 cat <<EOF > trust-policy.json
