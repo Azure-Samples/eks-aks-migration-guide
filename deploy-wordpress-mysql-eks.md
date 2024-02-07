@@ -16,7 +16,7 @@ Change the working directory to `Wordpress-Mysql` directory from cli and run the
 
 Verify that the Pod is running by running the following command:
 ```bash
-kubectl get pods
+kubectl get pods -n wp-mysql
 ```
 The response should be like this:
 
@@ -29,7 +29,7 @@ wordpress-mysql-6b7b9b4c87-bzvl5   1/1     Running   0          11m
 Verify that a PersistentVolume got dynamically provisioned by running the following command.
 
 ```bash
-kubectl get pvc
+kubectl get pvc -n wp-mysql
 ```
 The response should be like this:
 
@@ -42,7 +42,7 @@ wp-pv-claim      Bound    pvc-40345585-969d-4b37-91b0-eaca60b79661   20Gi       
 Verify that the Secret exists by running the following command:
 
 ```bash
-kubectl get secrets
+kubectl get secrets -n wp-mysql
 ```
 The response should be like this:
 
@@ -54,13 +54,13 @@ mysql-pass-8d668bfdmt   Opaque   1      12m
 Get the `External-IP` of wordpress service by running the below command and browse the wordpress site:
 
 ```bash
-kubectl get services wordpress
+kubectl get services wordpress -n wp-mysql
 ```
 The response should be like this:
 
 ```bash
 NAME        TYPE           CLUSTER-IP     EXTERNAL-IP                             PORT(S)        AGE
-wordpress   LoadBalancer   10.0.206.193   http://xx.us-east-2.elb.amazonaws.com   80:30569/TCP   13m
+wordpress   LoadBalancer   10.0.206.193   xxxx-xx.us-east-2.elb.amazonaws.com     80:30569/TCP   13m
 ```
 
 On visiting the `External-IP` URL, we will reach this page.

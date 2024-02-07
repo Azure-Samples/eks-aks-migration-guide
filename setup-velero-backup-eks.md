@@ -6,7 +6,7 @@ Velero uses S3 to store EKS backups in AWS. Here, we will create the S3 bucket t
 
 ```bash
 BUCKET=aws-velero-bucket
-REGION=us-east-1
+REGION=us-east-2
 aws s3 mb s3://$BUCKET --region $REGION
 ```
 
@@ -239,9 +239,9 @@ velero backup create BACKUP_NAME --include-namespaces wp-mysql  --default-volume
 In our case I have used the below command to annotate the pods running our wordpress and mysql.
 
 ```
-kubectl -n wp-msql annotate pod/wordpress-79d68d56b9-z6dlw backup.velero.io/backup-volumes=wordpress-persistent-storage
+kubectl -n wp-mysql annotate pod/wordpress-79d68d56b9-z6dlw backup.velero.io/backup-volumes=wordpress-persistent-storage
 
-kubectl -n wp-msql annotate pod/wordpress-mysql-6b7b9b4c87-7vdlx backup.velero.io/backup-volumes=mysql-persistent-storage
+kubectl -n wp-mysql annotate pod/wordpress-mysql-6b7b9b4c87-7vdlx backup.velero.io/backup-volumes=mysql-persistent-storage
 ```
 Run the command below to create a backup of the wordpress application with mysql database running in wp-mysql namespace on eks cluster:
 

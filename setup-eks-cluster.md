@@ -32,7 +32,7 @@ After cluster creation is complete, view the kubenetes resources created in EKS 
 
 ```bash
 PRIMARY_CONTEXT=eks_backup_velero
-REGION=us-east-1
+REGION=us-east-2
 EKS_CLUSTER_NAME=eks-aks-k8s-cluster
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 ```
@@ -111,7 +111,7 @@ aws iam attach-role-policy \
 ```
 Deploy the Amazon EBS CSI driver.
 ```bash
-aws eks create-addon --cluster-name $EKS_CLUSTER_NAME --addon-name aws-ebs-csi-driver --service-account-role-arn arn:aws:iam::$ACCOUNT:role/AmazonEKS_EBS_CSI_DriverRole
+aws eks create-addon --cluster-name $EKS_CLUSTER_NAME --addon-name aws-ebs-csi-driver --service-account-role-arn arn:aws:iam::$ACCOUNT:role/AmazonEKS_EBS_CSI_Driver
 ```
 Verify that the EBS CSI driver installed successfully:
 
